@@ -6,7 +6,8 @@ import FeaturesSection from "../../components/common/FeaturesSection";
 import AboutSection from "../../components/common/AboutSection";
 import Footer from "../../components/common/Footer";
 import StateCrimeDistribution from "../../components/common/StateCrimeDistribution";
-
+import FeaturesShowcase from "../../components/common/FeaturesShowcase";
+import AboutPlatform from "../../components/common/AboutPlatform";
 
 const LandingPage = () => {
     return (
@@ -16,8 +17,8 @@ const LandingPage = () => {
             <StateCrimeDistribution />
             <StatsSection />
             <FeaturedDatasets />
-            <FeaturesSection />
-            <AboutSection />
+            <FeaturesShowcase />
+            <AboutPlatform />
             <Footer />
         </>
     );
