@@ -26,22 +26,30 @@ const StateCrimeDistribution = () => {
     );
 
     return (
-        <section className="state-distribution">
+        <section
+            className="state-distribution"
+            data-aos="zoom-in"
+        >
 
             <div className="distribution-header">
 
-                <h2>
-                    Crime Distribution Across India
-                </h2>
+                <div data-aos="fade-right">
 
-                <p>
-                    State-wise contribution to reported crime records
-                </p>
+                    <h2>
+                        Crime Distribution Across India
+                    </h2>
+
+                    <p className="distribution-subtitle">
+                        Explore state-wise contribution to reported crimes
+                    </p>
+
+                </div>
 
                 <input
                     type="text"
-                    placeholder="Search State..."
+                    placeholder="🔍 Search State..."
                     value={search}
+                    data-aos="fade-left"
                     onChange={(e) =>
                         setSearch(e.target.value)
                     }
@@ -49,25 +57,18 @@ const StateCrimeDistribution = () => {
 
             </div>
 
-            <div className="top-state-card">
-
-                <h3>🏆 Top Contributing State</h3>
-
-                <h1>Maharashtra</h1>
-
-                <p>
-                    18% of total recorded crimes
-                </p>
-
-            </div>
-
-            <div className="histogram-container">
+            <div
+                className="histogram-container"
+                data-aos="fade-up"
+            >
 
                 {filteredStates.map((item, index) => (
 
                     <div
                         key={index}
                         className="histogram-row"
+                        data-aos="fade-right"
+                        data-aos-delay={index * 50}
                     >
 
                         <span className="state-name">
@@ -79,7 +80,7 @@ const StateCrimeDistribution = () => {
                             <div
                                 className="bar"
                                 style={{
-                                    width: `${item.percentage * 5}%`
+                                    width: `${item.percentage * 4}%`
                                 }}
                             ></div>
 

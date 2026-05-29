@@ -28,7 +28,12 @@ const FeaturesSection = () => {
 
             <div className="features-grid">
                 {features.map((feature, index) => (
-                    <div className="feature-card" key={index}>
+                    <div
+    className="feature-card"
+    key={index}
+    data-aos="fade-up"
+    data-aos-delay={index * 150}
+>
                         <h3>{feature.title}</h3>
 
                         <p>
