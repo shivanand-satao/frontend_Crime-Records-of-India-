@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
 
 const RegisterPage = () => {
-  const [form, setForm] = useState({ username: "", full_name: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: "", full_name: "", email: "", password: "", department: "" });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,11 +21,23 @@ const RegisterPage = () => {
     setIsSubmitting(true);
 
     try {
-      await authService.register(form);
+      const payload = {
+        ...form,
+        username: form.username.trim(),
+        full_name: form.full_name.trim(),
+        email: form.email.trim().toLowerCase(),
+        department: form.department.trim(),
+      };
+
+      await authService.register(payload);
       setMessage("Account created. Redirecting to login...");
       setTimeout(() => navigate("/login"), 900);
     } catch (registerError) {
-      setError(registerError.message || "Registration failed.");
+      setError(
+        registerError.status === 409
+          ? "That username or email is already registered. Use a new username and a different email address."
+          : registerError.message || "Registration failed."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -42,19 +54,23 @@ const RegisterPage = () => {
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
             <span>Username</span>
-            <input value={form.username} onChange={(event) => updateField("username", event.target.value)} required />
+            <input autoComplete="username" value={form.username} onChange={(event) => updateField("username", event.target.value)} required />
           </label>
           <label>
             <span>Full name</span>
-            <input value={form.full_name} onChange={(event) => updateField("full_name", event.target.value)} required />
+            <input autoComplete="name" value={form.full_name} onChange={(event) => updateField("full_name", event.target.value)} required />
           </label>
           <label>
             <span>Email</span>
-            <input type="email" value={form.email} onChange={(event) => updateField("email", event.target.value)} required />
+            <input autoComplete="email" type="email" value={form.email} onChange={(event) => updateField("email", event.target.value)} required />
           </label>
           <label>
             <span>Password</span>
-            <input type="password" value={form.password} onChange={(event) => updateField("password", event.target.value)} required />
+            <input autoComplete="new-password" type="password" value={form.password} onChange={(event) => updateField("password", event.target.value)} required />
+          </label>
+          <label>
+            <span>Department</span>
+            <input value={form.department} onChange={(event) => updateField("department", event.target.value)} placeholder="Analysis" />
           </label>
           {error && <p className="form-error">{error}</p>}
           {message && <p className="form-success">{message}</p>}

@@ -5,6 +5,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import UserLayout from "../layouts/UserLayout";
 import AdminRoute from "./AdminRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import UserRoute from "./UserRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import DatasetManager from "../pages/admin/DatasetManager";
 import GovernanceLogs from "../pages/admin/GovernanceLogs";
@@ -34,7 +35,9 @@ const AppRoutes = () => {
                         path="/dashboard"
                         element={
                             <ProtectedRoute>
-                                <UserLayout />
+                                <UserRoute>
+                                    <UserLayout />
+                                </UserRoute>
                             </ProtectedRoute>
                         }
                     >

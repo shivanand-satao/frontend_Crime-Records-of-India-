@@ -8,7 +8,8 @@ describe('API Client - Unit Tests', () => {
   beforeEach(() => {
     // Mock the api axios instance, not the base axios
     mock = new MockAdapter(api);
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    localStorage.getItem.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -213,7 +214,7 @@ describe('API Client - Unit Tests', () => {
       mock.onGet('/protected-endpoint').replyOnce(401);
 
       // Refresh token request succeeds
-      mock.onPost('/auth/refresh').reply(200, { accessToken: newToken });
+      mock.onPost('/auth/refresh-token').reply(200, { accessToken: newToken });
 
       // Retry with new token succeeds
       mock.onGet('/protected-endpoint').reply(200, { data: 'success' });
@@ -238,7 +239,7 @@ describe('API Client - Unit Tests', () => {
       mock.onGet('/protected-endpoint').replyOnce(401);
 
       // Refresh token request also fails
-      mock.onPost('/auth/refresh').reply(401, { error: 'Invalid refresh token' });
+      mock.onPost('/auth/refresh-token').reply(401, { error: 'Invalid refresh token' });
 
       await expect(api.get('/protected-endpoint')).rejects.toBeDefined();
 

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { FiLock, FiMail, FiShield } from "react-icons/fi";
+import { FiLock, FiShield, FiUser } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { getPostLoginPath } from "../../utils/roleHelper";
 
 const LoginPage = () => {
     const [mode, setMode] = useState("user");
@@ -20,8 +21,8 @@ const LoginPage = () => {
 
         try {
             const user = await login({ identifier, password, mode });
-            const fallbackPath = user.role === "admin" || user.role === "superadmin" ? "/admin" : "/dashboard";
-            navigate(location.state?.from?.pathname || fallbackPath, { replace: true });
+            const targetPath = getPostLoginPath(user.role, location.state?.from?.pathname);
+            navigate(targetPath, { replace: true });
         } catch (loginError) {
             setError(loginError.message || "Login failed. Check your credentials and try again.");
         } finally {
@@ -40,7 +41,7 @@ const LoginPage = () => {
 
                 <div className="segmented-control">
                     <button className={mode === "user" ? "active" : ""} onClick={() => setMode("user")} type="button">
-                        <FiMail /> User
+                        <FiUser /> User
                     </button>
                     <button className={mode === "admin" ? "active" : ""} onClick={() => setMode("admin")} type="button">
                         <FiShield /> Admin
@@ -49,12 +50,12 @@ const LoginPage = () => {
 
                 <form className="auth-form" onSubmit={handleSubmit}>
                     <label>
-                        <span>{mode === "admin" ? "Username" : "Email"}</span>
+                        <span>Username</span>
                         <input
-                            type={mode === "admin" ? "text" : "email"}
+                            type="text"
                             value={identifier}
                             onChange={(event) => setIdentifier(event.target.value)}
-                            placeholder={mode === "admin" ? "superadmin" : "test@test.com"}
+                            placeholder={mode === "admin" ? "Admin username" : "Your username"}
                             required
                         />
                     </label>
@@ -64,7 +65,7 @@ const LoginPage = () => {
                             type="password"
                             value={password}
                             onChange={(event) => setPassword(event.target.value)}
-                            placeholder={mode === "admin" ? "Admin@123" : "User@123"}
+                            placeholder="Your password"
                             required
                         />
                     </label>

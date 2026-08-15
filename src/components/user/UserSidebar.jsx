@@ -10,8 +10,11 @@ const links = [
 ];
 
 const UserSidebar = () => (
-  <aside className="sidebar">
-    <div className="sidebar-brand">CRI</div>
+  <aside className="sidebar user-sidebar">
+    <div className="sidebar-brand-stack">
+      <div className="sidebar-brand user-brand">Trends view</div>
+      <p>Crime records explorer</p>
+    </div>
     <nav className="sidebar-links">
       {links.map(({ to, label, icon: Icon, end }) => (
         <NavLink key={to} to={to} end={end} className="sidebar-link">
@@ -20,6 +23,10 @@ const UserSidebar = () => (
         </NavLink>
       ))}
     </nav>
+    <div className="sidebar-footer">
+      <span>Research focus</span>
+      <strong>Compare, inspect, and browse</strong>
+    </div>
   </aside>
 );
 

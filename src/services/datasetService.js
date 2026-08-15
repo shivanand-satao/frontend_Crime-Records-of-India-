@@ -6,19 +6,19 @@ const datasetService = {
   },
 
   getSchema(table) {
-    return api.get(`/tables/${table}/schema`);
+    return api.get(`/tables/${encodeURIComponent(table)}/schema`);
   },
 
   getRows(table, params = {}) {
-    return api.get(`/data/${table}`, { params });
+    return api.get(`/data/${encodeURIComponent(table)}`, { params });
   },
 
   searchRows(table, params = {}) {
-    return api.get(`/data/${table}/search`, { params });
+    return api.post(`/data/${encodeURIComponent(table)}/search`, params);
   },
 
   getFilterOptions(table, column) {
-    return api.get(`/data/${table}/filter-options/${column}`);
+    return api.get(`/data/${encodeURIComponent(table)}/filter-options/${encodeURIComponent(column)}`);
   },
 };
 

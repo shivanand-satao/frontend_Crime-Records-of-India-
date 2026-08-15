@@ -11,16 +11,22 @@ const UserNavbar = () => {
     navigate("/login");
   };
 
+  const displayName = user?.full_name || user?.username || "Research User";
+
   return (
     <header className="topbar">
-      <div>
-        <p className="eyebrow">Crime Records Portal</p>
-        <h1>{user?.full_name || user?.username || "Research User"}</h1>
+      <div className="topbar-title">
+        <p className="eyebrow">Explore</p>
+        <h1>Compare crime data trends</h1>
+        <p className="topbar-subtitle">Search across tables, spot patterns, and drill into records.</p>
       </div>
-      <button className="icon-button labeled" onClick={handleLogout} title="Sign out">
-        <FiLogOut />
-        <span>Logout</span>
-      </button>
+      <div className="topbar-actions">
+        <span className="user-badge">{displayName}</span>
+        <button className="icon-button labeled" onClick={handleLogout} title="Sign out">
+          <FiLogOut />
+          <span>Logout</span>
+        </button>
+      </div>
     </header>
   );
 };

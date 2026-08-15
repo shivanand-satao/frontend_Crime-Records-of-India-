@@ -18,84 +18,44 @@ const stateData = [
 ];
 
 const StateCrimeDistribution = () => {
-
     const [search, setSearch] = useState("");
-
     const filteredStates = stateData.filter((item) =>
         item.state.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
-        <section
-            className="state-distribution"
-            data-aos="zoom-in"
-        >
-
+        <section className="state-distribution" data-aos="zoom-in" id="analytics">
             <div className="distribution-header">
-
                 <div data-aos="fade-right">
-
-                    <h2>
-                        Crime Distribution Across India
-                    </h2>
-
+                    <h2>Crime Distribution Across India</h2>
                     <p className="distribution-subtitle">
                         Explore state-wise contribution to reported crimes
                     </p>
-
                 </div>
-
                 <input
                     type="text"
-                    placeholder="🔍 Search State..."
+                    placeholder="Search State..."
                     value={search}
                     data-aos="fade-left"
-                    onChange={(e) =>
-                        setSearch(e.target.value)
-                    }
+                    onChange={(event) => setSearch(event.target.value)}
                 />
-
             </div>
-
-            <div
-                className="histogram-container"
-                data-aos="fade-up"
-            >
-
+            <div className="histogram-container" data-aos="fade-up">
                 {filteredStates.map((item, index) => (
-
                     <div
-                        key={index}
+                        key={item.state}
                         className="histogram-row"
                         data-aos="fade-right"
                         data-aos-delay={index * 50}
                     >
-
-                        <span className="state-name">
-                            {item.state}
-                        </span>
-
+                        <span className="state-name">{item.state}</span>
                         <div className="bar-container">
-
-                            <div
-                                className="bar"
-                                style={{
-                                    width: `${item.percentage * 4}%`
-                                }}
-                            ></div>
-
+                            <div className="bar" style={{ width: `${item.percentage * 4}%` }} />
                         </div>
-
-                        <span className="percentage">
-                            {item.percentage}%
-                        </span>
-
+                        <span className="percentage">{item.percentage}%</span>
                     </div>
-
                 ))}
-
             </div>
-
         </section>
     );
 };

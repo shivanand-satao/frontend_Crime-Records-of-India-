@@ -1,31 +1,40 @@
+import { FiAlertTriangle, FiArchive, FiHome, FiShield, FiTruck, FiUsers } from "react-icons/fi";
+import { Link } from "react-router-dom";
+
 const datasets = [
     {
-        icon: "🚗",
+        Icon: FiTruck,
+        table: "auto_theft",
         title: "Auto Theft",
         description: "Track vehicle theft trends across India."
     },
     {
-        icon: "👥",
+        Icon: FiUsers,
+        table: "victims_of_rape",
         title: "Victims of Rape",
         description: "Analyze crime statistics involving victims."
     },
     {
-        icon: "⚠️",
+        Icon: FiAlertTriangle,
+        table: "serious_fraud",
         title: "Serious Fraud",
         description: "Monitor financial and cyber fraud patterns."
     },
     {
-        icon: "🏠",
+        Icon: FiHome,
+        table: "police_housing",
         title: "Police Housing",
         description: "Explore police infrastructure datasets."
     },
     {
-        icon: "📦",
+        Icon: FiArchive,
+        table: "property_stolen_and_recovered",
         title: "Property Recovery",
         description: "Recovered property and asset records."
     },
     {
-        icon: "🏛️",
+        Icon: FiShield,
+        table: "human_rights_violation_by_police",
         title: "Human Rights Violations",
         description: "Insights into human rights related crimes."
     }
@@ -33,39 +42,27 @@ const datasets = [
 
 const FeaturedDatasets = () => {
     return (
-        <section className="datasets-section">
-
+        <section className="datasets-section" id="datasets">
             <h2>Featured Datasets</h2>
-
             <div className="dataset-grid">
-
-                {datasets.map((dataset, index) => (
-
+                {datasets.map(({ Icon, ...dataset }, index) => (
                     <div
-                        key={index}
+                        key={dataset.table}
                         className="dataset-card"
                         data-aos="fade-up"
                         data-aos-delay={index * 100}
                     >
-
                         <div className="dataset-icon">
-                            {dataset.icon}
+                            <Icon />
                         </div>
-
                         <h3>{dataset.title}</h3>
-
                         <p>{dataset.description}</p>
-
-                        <button>
-                            View Dataset →
-                        </button>
-
+                        <Link to={`/dashboard/datasets/${dataset.table}`}>
+                            <button>View Dataset</button>
+                        </Link>
                     </div>
-
                 ))}
-
             </div>
-
         </section>
     );
 };

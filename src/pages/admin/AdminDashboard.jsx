@@ -1,43 +1,5 @@
-import { useEffect, useState } from "react";
-import { FiDatabase, FiEye, FiSearch, FiShield, FiUsers } from "react-icons/fi";
-import analyticsService from "../../services/analyticsService";
+import Dashboard from "../user/Dashboard";
 
-const cards = [
-    ["totalUsers", "Users", FiUsers],
-    ["totalAdmins", "Admins", FiShield],
-    ["totalTables", "Datasets", FiDatabase],
-    ["totalViews", "Views", FiEye],
-    ["totalSearches", "Searches", FiSearch],
-];
-
-const AdminDashboard = () => {
-    const [overview, setOverview] = useState({});
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        analyticsService.getOverview().then(setOverview).catch((requestError) => setError(requestError.message));
-    }, []);
-
-    return (
-        <section className="page-stack">
-            <div className="page-heading">
-                <div>
-                    <p className="eyebrow">Admin overview</p>
-                    <h2>Governance and platform health</h2>
-                </div>
-            </div>
-            {error && <div className="alert">{error}</div>}
-            <div className="metric-grid">
-                {cards.map(([key, label, Icon]) => (
-                    <article className="metric-card" key={key}>
-                        <Icon />
-                        <span>{label}</span>
-                        <strong>{overview[key] ?? "-"}</strong>
-                    </article>
-                ))}
-            </div>
-        </section>
-    );
-};
+const AdminDashboard = () => <Dashboard isAdmin />;
 
 export default AdminDashboard;

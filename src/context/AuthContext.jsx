@@ -1,7 +1,7 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import authService from "../services/authService";
-
-export const AuthContext = createContext(null);
+import { AuthContext } from "./authContextValue";
+import { isAdminRole, normalizeRole } from "../utils/roleHelper";
 
 const readStoredUser = () => {
   try {
@@ -14,20 +14,19 @@ const readStoredUser = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(readStoredUser);
   const [accessToken, setAccessToken] = useState(() => localStorage.getItem("accessToken"));
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
+  const isReady = true;
 
   const persistSession = useCallback((payload, fallbackRole) => {
+    const identity = payload.user || payload.admin || {};
     const nextUser = {
-      ...(payload.user || {}),
-      role: payload.user?.role || payload.role || fallbackRole,
+      ...identity,
+      role: normalizeRole(identity.role || payload.role || fallbackRole),
     };
 
     localStorage.setItem("accessToken", payload.accessToken);
-    localStorage.setItem("refreshToken", payload.refreshToken);
+    if (payload.refreshToken) {
+      localStorage.setItem("refreshToken", payload.refreshToken);
+    }
     localStorage.setItem("userData", JSON.stringify(nextUser));
 
     setAccessToken(payload.accessToken);
@@ -40,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       const payload =
         mode === "admin"
           ? await authService.loginAdmin({ username: identifier, password })
-          : await authService.loginUser({ email: identifier, password });
+          : await authService.loginUser({ username: identifier, password });
 
       return persistSession(payload, mode);
     },
@@ -61,7 +60,7 @@ export const AuthProvider = ({ children }) => {
       accessToken,
       isReady,
       isAuthenticated: Boolean(accessToken && user),
-      isAdmin: user?.role === "admin" || user?.role === "superadmin",
+      isAdmin: isAdminRole(user?.role),
       login,
       logout,
     }),

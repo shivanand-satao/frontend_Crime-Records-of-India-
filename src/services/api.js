@@ -17,7 +17,7 @@ const addRefreshSubscriber = (callback) => {
 
 // Create base Axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001/api",
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
@@ -78,14 +78,14 @@ api.interceptors.response.use(
     }
 
     // Handle 401 Unauthorized - attempt token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest._skipAuthRefresh) {
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((newAccessToken) => {
             if (newAccessToken) {
               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-              resolve(axios(originalRequest));
+              resolve(api(originalRequest));
             } else {
               reject(error);
             }
@@ -104,12 +104,13 @@ api.interceptors.response.use(
         }
 
         // Attempt to refresh token
-        const response = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh`,
-          { refreshToken }
+        const response = await api.post(
+          "/auth/refresh-token",
+          { refreshToken },
+          { _skipAuthRefresh: true }
         );
 
-        const { accessToken: newAccessToken } = response.data;
+        const { accessToken: newAccessToken } = response;
 
         // Store new access token
         localStorage.setItem("accessToken", newAccessToken);
@@ -123,7 +124,7 @@ api.interceptors.response.use(
         isRefreshing = false;
 
         // Retry the original request
-        return axios(originalRequest);
+        return api(originalRequest);
       } catch (refreshError) {
         // Token refresh failed - clear tokens and redirect to login
         isRefreshing = false;
@@ -134,7 +135,9 @@ api.interceptors.response.use(
         localStorage.removeItem("userData");
 
         // Redirect to login page
-        if (window.location.pathname !== "/login") {
+        const isTest = globalThis.process?.env?.NODE_ENV === "test";
+
+        if (!isTest && window.location.pathname !== "/login") {
           window.location.href = "/login";
         }
 
@@ -160,19 +163,19 @@ api.interceptors.response.use(
 
       switch (status) {
         case 400:
-          transformedError.message = errorData?.error || "Invalid request data";
+          transformedError.message = errorData?.error || errorData?.message || "Invalid request data";
           transformedError.code = "BAD_REQUEST";
           break;
         case 401:
-          transformedError.message = errorData?.error || "Unauthorized";
+          transformedError.message = errorData?.error || errorData?.message || "Unauthorized";
           transformedError.code = "UNAUTHORIZED";
           break;
         case 403:
-          transformedError.message = errorData?.error || "You don't have permission to access this resource";
+          transformedError.message = errorData?.error || errorData?.message || "You don't have permission to access this resource";
           transformedError.code = "FORBIDDEN";
           break;
         case 404:
-          transformedError.message = errorData?.error || "Resource not found";
+          transformedError.message = errorData?.error || errorData?.message || "Resource not found";
           transformedError.code = "NOT_FOUND";
           break;
         case 500:
@@ -182,7 +185,7 @@ api.interceptors.response.use(
           transformedError.code = "SERVER_ERROR";
           break;
         default:
-          transformedError.message = errorData?.error || "An unexpected error occurred";
+          transformedError.message = errorData?.error || errorData?.message || "An unexpected error occurred";
       }
     }
 

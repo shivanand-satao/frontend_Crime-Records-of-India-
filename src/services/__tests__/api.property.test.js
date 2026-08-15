@@ -7,7 +7,8 @@ describe('API Client - Property-Based Tests', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(api);
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    localStorage.getItem.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -17,10 +18,10 @@ describe('API Client - Property-Based Tests', () => {
   describe('Property 1: Authorization Header Attachment', () => {
     // Feature: backend-frontend-integration, Property 1: Authorization Header Attachment
     // **Validates: Requirements 1.2, 16.1**
-    test('should attach Bearer token for any authenticated request', () => {
-      fc.assert(
-        fc.property(
-          fc.string({ minLength: 20, maxLength: 100 }), // access token
+    test('should attach Bearer token for any authenticated request', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.stringMatching(/^[A-Za-z0-9._-]{20,100}$/), // access token
           fc.constantFrom('get', 'post', 'put', 'delete'), // HTTP method
           fc.string({ minLength: 1, maxLength: 50 }).map(s => s.replace(/[^a-zA-Z0-9-]/g, 'a')), // endpoint path
           async (accessToken, method, endpoint) => {
@@ -64,10 +65,10 @@ describe('API Client - Property-Based Tests', () => {
   describe('Property 18: Error Response Format Consistency', () => {
     // Feature: backend-frontend-integration, Property 18: Error Response Format Consistency
     // **Validates: Requirements 16.3**
-    test('should transform any 4xx error into consistent format', () => {
-      fc.assert(
-        fc.property(
-          fc.integer({ min: 400, max: 404 }), // HTTP status code (limited range for testing)
+    test('should transform any 4xx error into consistent format', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.constantFrom(400, 402, 403, 404), // 401 has refresh-specific behavior
           fc.string({ minLength: 5, maxLength: 100 }), // error message
           async (statusCode, errorMessage) => {
             mock.onGet('/test-error').reply(statusCode, { error: errorMessage });
@@ -92,9 +93,9 @@ describe('API Client - Property-Based Tests', () => {
       );
     });
 
-    test('should transform 5xx errors into consistent format with generic message', () => {
-      fc.assert(
-        fc.property(
+    test('should transform 5xx errors into consistent format with generic message', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.constantFrom(500, 502, 503),
           async (statusCode) => {
             mock.onGet('/test-server-error').reply(statusCode, {});
@@ -122,9 +123,9 @@ describe('API Client - Property-Based Tests', () => {
   describe('Property 19: Success Response Format Consistency', () => {
     // Feature: backend-frontend-integration, Property 19: Success Response Format Consistency
     // **Validates: Requirements 16.4**
-    test('should extract and return data for any successful 2xx response', () => {
-      fc.assert(
-        fc.property(
+    test('should extract and return data for any successful 2xx response', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.constantFrom(200, 201, 204), // Success status codes
           fc.record({
             success: fc.boolean(),
@@ -147,9 +148,9 @@ describe('API Client - Property-Based Tests', () => {
   });
 
   describe('Property: Request Parameters Preservation', () => {
-    test('should preserve query parameters for any GET request', () => {
-      fc.assert(
-        fc.property(
+    test('should preserve query parameters for any GET request', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.record({
             page: fc.integer({ min: 1, max: 100 }),
             limit: fc.integer({ min: 1, max: 100 }),
@@ -168,9 +169,9 @@ describe('API Client - Property-Based Tests', () => {
       );
     });
 
-    test('should preserve request body for any POST request', () => {
-      fc.assert(
-        fc.property(
+    test('should preserve request body for any POST request', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.record({
             name: fc.string({ minLength: 1, maxLength: 50 }),
             value: fc.integer(),
@@ -192,9 +193,9 @@ describe('API Client - Property-Based Tests', () => {
   });
 
   describe('Property: Network Error Handling', () => {
-    test('should return consistent error for network failures', () => {
-      fc.assert(
-        fc.property(
+    test('should return consistent error for network failures', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.string({ minLength: 1, maxLength: 50 }).map(s => s.replace(/[^a-zA-Z0-9-]/g, 'a')),
           async (endpoint) => {
             mock.onGet(`/${endpoint}`).networkError();
@@ -219,13 +220,13 @@ describe('API Client - Property-Based Tests', () => {
   });
 
   describe('Property: Token Format Validation', () => {
-    test('should work with JWT-like tokens', () => {
-      fc.assert(
-        fc.property(
+    test('should work with JWT-like tokens', async () => {
+      await fc.assert(
+        fc.asyncProperty(
           fc.tuple(
-            fc.string({ minLength: 10, maxLength: 50 }),
-            fc.string({ minLength: 10, maxLength: 100 }),
-            fc.string({ minLength: 10, maxLength: 50 })
+            fc.stringMatching(/^[A-Za-z0-9_-]{10,50}$/),
+            fc.stringMatching(/^[A-Za-z0-9_-]{10,100}$/),
+            fc.stringMatching(/^[A-Za-z0-9_-]{10,50}$/)
           ).map(([header, payload, signature]) => `${header}.${payload}.${signature}`),
           async (jwtToken) => {
             localStorage.getItem.mockReturnValue(jwtToken);

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { FiDatabase, FiSearch } from "react-icons/fi";
+import { FiArrowRight, FiDatabase, FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import datasetService from "../../services/datasetService";
+import { extractTableName, normalizeTableList } from "../../utils/datasetNormalization";
 
 const Datasets = () => {
   const [tables, setTables] = useState([]);
@@ -11,7 +12,7 @@ const Datasets = () => {
   useEffect(() => {
     datasetService
       .getTables()
-      .then((response) => setTables(response.tables || response.data || response || []))
+      .then((response) => setTables(normalizeTableList(response)))
       .catch((requestError) => setError(requestError.message));
   }, []);
 
@@ -19,10 +20,11 @@ const Datasets = () => {
 
   return (
     <section className="page-stack">
-      <div className="page-heading">
+      <div className="page-heading dashboard-subhead">
         <div>
           <p className="eyebrow">Datasets</p>
-          <h2>Explore backend tables</h2>
+          <h2>Search the available tables</h2>
+          <p className="subheading-text">Filter the records you want to compare and open the detailed table view from here.</p>
         </div>
         <label className="search-box">
           <FiSearch />
@@ -30,13 +32,27 @@ const Datasets = () => {
         </label>
       </div>
       {error && <div className="alert">{error}</div>}
+      <div className="panel dataset-hero-row">
+        <div>
+          <p className="eyebrow">Filtered result</p>
+          <h3>{filteredTables.length} dataset{filteredTables.length === 1 ? "" : "s"} visible</h3>
+        </div>
+        <Link className="secondary-link" to="/dashboard/analytics">
+          Review trend summary
+          <FiArrowRight />
+        </Link>
+      </div>
       <div className="dataset-grid compact">
-        {filteredTables.map((table) => (
-          <Link className="dataset-tile" to={`/dashboard/datasets/${table}`} key={table}>
-            <FiDatabase />
-            <span>{String(table).replaceAll("_", " ")}</span>
-          </Link>
-        ))}
+        {filteredTables.length > 0 ? (
+          filteredTables.map((table) => (
+            <Link className="dataset-tile" to={`/dashboard/datasets/${extractTableName(table)}`} key={table}>
+              <FiDatabase />
+              <span>{String(table).replaceAll("_", " ")}</span>
+            </Link>
+          ))
+        ) : (
+          <div className="panel empty-state">No datasets match the current search.</div>
+        )}
       </div>
     </section>
   );
