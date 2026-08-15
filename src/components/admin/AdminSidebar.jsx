@@ -1,9 +1,10 @@
-import { FiActivity, FiDatabase, FiHome, FiSearch, FiSettings, FiUsers } from "react-icons/fi";
+import { FiActivity, FiBarChart2, FiDatabase, FiHome, FiSearch, FiSettings, FiUsers } from "react-icons/fi";
 import { NavLink } from "react-router-dom";
 
 const links = [
   { to: "/admin", label: "Overview", icon: FiHome, end: true },
   { to: "/admin/datasets", label: "Datasets", icon: FiDatabase },
+  { to: "/admin/analytics", label: "Analytics", icon: FiBarChart2 },
   { to: "/admin/users", label: "Users", icon: FiUsers },
   { to: "/admin/search-logs", label: "Search Logs", icon: FiSearch },
   { to: "/admin/governance", label: "Governance", icon: FiActivity },

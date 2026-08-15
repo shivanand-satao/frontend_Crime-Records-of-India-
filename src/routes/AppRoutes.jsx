@@ -7,6 +7,7 @@ import AdminRoute from "./AdminRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import UserRoute from "./UserRoute";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminAnalytics from "../pages/admin/Analytics";
 import DatasetManager from "../pages/admin/DatasetManager";
 import GovernanceLogs from "../pages/admin/GovernanceLogs";
 import SearchLogs from "../pages/admin/SearchLogs";
@@ -60,6 +61,7 @@ const AppRoutes = () => {
                     >
                         <Route index element={<AdminDashboard />} />
                         <Route path="datasets" element={<DatasetManager />} />
+                        <Route path="analytics" element={<AdminAnalytics />} />
                         <Route path="users" element={<Users />} />
                         <Route path="search-logs" element={<SearchLogs />} />
                         <Route path="governance" element={<GovernanceLogs />} />

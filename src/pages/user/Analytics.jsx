@@ -11,9 +11,11 @@ const cards = [
   ["totalSearches", "Searches", FiSearch],
 ];
 
-const Analytics = () => {
+const Analytics = ({ isAdmin = false }) => {
   const [overview, setOverview] = useState({});
   const [error, setError] = useState("");
+  const historyPath = isAdmin ? "/admin/search-logs" : "/dashboard/history";
+  const datasetsPath = isAdmin ? "/admin/datasets" : "/dashboard/datasets";
 
   const signalRows = useMemo(() => {
     const totalUsers = Number(overview.totalUsers || 0);
@@ -43,11 +45,11 @@ const Analytics = () => {
           <h2>Platform activity at a glance</h2>
           <p className="subheading-text">Use this view to see whether the platform is being searched, explored, or viewed more heavily right now.</p>
           <div className="dashboard-actions">
-            <Link className="primary-link" to="/dashboard/history">
-              Open history
+            <Link className="primary-link" to={historyPath}>
+              {isAdmin ? "Open search logs" : "Open history"}
               <FiArrowRight />
             </Link>
-            <Link className="secondary-link" to="/dashboard/datasets">
+            <Link className="secondary-link" to={datasetsPath}>
               Explore datasets
             </Link>
           </div>
@@ -89,10 +91,10 @@ const Analytics = () => {
         <div className="panel analytics-note-panel">
           <p className="eyebrow">What to inspect next</p>
           <h3>Move from summary to records</h3>
-          <p className="muted-panel">Open datasets when you want table-level detail. Use history when you want to review what you filtered and clicked most recently.</p>
+          <p className="muted-panel">Open datasets when you want table-level detail. Use {isAdmin ? "search logs when you want to review user queries and results." : "history when you want to review what you filtered and clicked most recently."}</p>
           <div className="spotlight-links analytics-links">
-            <Link to="/dashboard/datasets">Dataset explorer</Link>
-            <Link to="/dashboard/history">Session history</Link>
+            <Link to={datasetsPath}>Dataset explorer</Link>
+            <Link to={historyPath}>{isAdmin ? "Search activity" : "Session history"}</Link>
           </div>
         </div>
       </div>
