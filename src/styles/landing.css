@@ -860,3 +860,383 @@
         #475569
     );
 }
+
+/* Landing page responsive layout */
+@media (max-width: 900px) {
+    .landing-page .navbar {
+        padding: 18px 28px;
+    }
+
+    .landing-page .logo {
+        font-size: 1.25rem;
+    }
+
+    .landing-page .nav-links {
+        gap: 16px;
+    }
+
+    .landing-page .hero {
+        min-height: 70vh;
+        min-height: 70svh;
+        padding: 72px 28px;
+    }
+
+    .landing-page .hero h1 {
+        font-size: clamp(2.75rem, 8vw, 3.5rem);
+        line-height: 1.08;
+    }
+
+    .landing-page .hero p {
+        max-width: 560px;
+        font-size: 1.12rem;
+        line-height: 1.6;
+    }
+
+    .landing-page .stats-section,
+    .landing-page .datasets-section,
+    .landing-page .features-section,
+    .landing-page .about-section {
+        padding: 64px 28px;
+    }
+
+    .landing-page .stats-grid,
+    .landing-page .dataset-grid,
+    .landing-page .features-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .landing-page .stat-card,
+    .landing-page .dataset-card {
+        padding: 28px;
+    }
+
+    .landing-page .features-showcase {
+        margin: 56px 20px;
+        padding: 72px 32px;
+        border-radius: 36px;
+    }
+
+    .landing-page .features-showcase h2,
+    .landing-page .about-platform h2,
+    .landing-page .distribution-header h2 {
+        font-size: 2.35rem;
+        line-height: 1.15;
+    }
+
+    .landing-page .showcase-card {
+        gap: 40px;
+    }
+
+    .landing-page .showcase-illustration {
+        width: min(100%, 450px);
+    }
+
+    .landing-page .showcase-content {
+        max-width: 620px;
+    }
+
+    .landing-page .about-platform {
+        min-height: auto;
+        padding: 80px 28px 56px;
+    }
+
+    .landing-page .about-platform h2 {
+        margin-bottom: 48px;
+    }
+
+    .landing-page .about-card {
+        position: relative;
+        top: auto;
+        width: 100%;
+        height: auto;
+        min-height: 340px;
+        margin: 0 auto 28px;
+        padding: 40px;
+        gap: 32px;
+    }
+
+    .landing-page .card-graphic {
+        width: 190px;
+        min-width: 190px;
+        height: 190px;
+        font-size: 4.5rem;
+    }
+
+    .landing-page .footer {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .landing-page .navbar {
+        flex-direction: column;
+        gap: 18px;
+        padding: 18px 16px;
+        text-align: center;
+    }
+
+    .landing-page .logo {
+        font-size: 1.2rem;
+        line-height: 1.3;
+    }
+
+    .landing-page .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 10px 16px;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+    }
+
+    .landing-page .login-btn {
+        min-height: 42px;
+        padding: 9px 18px;
+    }
+
+    .landing-page .hero {
+        min-height: calc(100vh - 124px);
+        min-height: calc(100svh - 124px);
+        padding: 64px 18px;
+    }
+
+    .landing-page .hero h1 {
+        max-width: 330px;
+        font-size: clamp(2.25rem, 12vw, 3rem);
+        margin-bottom: 18px;
+    }
+
+    .landing-page .hero p {
+        max-width: 330px;
+        font-size: 1rem;
+        margin-bottom: 28px;
+    }
+
+    .landing-page .hero-buttons {
+        display: grid;
+        width: min(100%, 330px);
+        gap: 12px;
+    }
+
+    .landing-page .hero-buttons a,
+    .landing-page .hero-buttons button {
+        width: 100%;
+    }
+
+    .landing-page .hero-buttons button {
+        min-height: 48px;
+    }
+
+    .landing-page .stats-section,
+    .landing-page .datasets-section,
+    .landing-page .features-section,
+    .landing-page .about-section {
+        padding: 54px 16px;
+    }
+
+    .landing-page .stats-section h2,
+    .landing-page .datasets-section h2,
+    .landing-page .features-section h2,
+    .landing-page .about-section h2 {
+        margin-bottom: 28px;
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    .landing-page .stats-grid,
+    .landing-page .dataset-grid,
+    .landing-page .features-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .landing-page .stat-card,
+    .landing-page .dataset-card {
+        padding: 24px;
+        border-radius: 16px;
+    }
+
+    .landing-page .stat-icon,
+    .landing-page .dataset-icon {
+        font-size: 2.35rem;
+    }
+
+    .landing-page .stat-card h3 {
+        font-size: 2.35rem;
+    }
+
+    .landing-page .state-distribution {
+        padding: 54px 14px;
+    }
+
+    .landing-page .distribution-header {
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    .landing-page .distribution-header h2,
+    .landing-page .features-showcase h2,
+    .landing-page .about-platform h2 {
+        font-size: 1.9rem;
+    }
+
+    .landing-page .distribution-subtitle {
+        margin-top: 10px;
+        line-height: 1.5;
+    }
+
+    .landing-page .distribution-header input {
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .landing-page .histogram-container {
+        padding: 22px 16px;
+        border-radius: 12px;
+    }
+
+    .landing-page .histogram-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px 16px;
+        margin-bottom: 22px;
+    }
+
+    .landing-page .histogram-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .landing-page .state-name,
+    .landing-page .percentage {
+        width: auto;
+    }
+
+    .landing-page .state-name {
+        font-size: 0.88rem;
+    }
+
+    .landing-page .bar-container {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        height: 24px;
+    }
+
+    .landing-page .features-showcase {
+        margin: 44px 10px;
+        padding: 52px 16px;
+        border-radius: 24px;
+    }
+
+    .landing-page .showcase-subtitle {
+        margin: 14px auto 32px;
+        line-height: 1.6;
+    }
+
+    .landing-page .feature-tabs {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 10px;
+        margin: 0 -16px 38px;
+        padding: 0 16px 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .landing-page .feature-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .landing-page .feature-tab {
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 11px 18px;
+    }
+
+    .landing-page .showcase-card {
+        gap: 30px;
+    }
+
+    .landing-page .showcase-illustration {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        border-radius: 20px;
+    }
+
+    .landing-page .showcase-illustration h1 {
+        font-size: 5rem;
+    }
+
+    .landing-page .circle {
+        width: 84px;
+        height: 84px;
+        left: 20px;
+    }
+
+    .landing-page .square {
+        width: 58px;
+        height: 58px;
+        right: 28px;
+        top: 42px;
+    }
+
+    .landing-page .triangle {
+        left: 42%;
+        border-left-width: 42px;
+        border-right-width: 42px;
+        border-bottom-width: 72px;
+    }
+
+    .landing-page .showcase-content h3 {
+        font-size: 1.6rem;
+    }
+
+    .landing-page .showcase-content p {
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    .landing-page .about-platform {
+        padding: 64px 16px 40px;
+    }
+
+    .landing-page .about-platform h2 {
+        margin-bottom: 34px;
+    }
+
+    .landing-page .about-card {
+        min-height: 0;
+        padding: 28px 22px;
+        flex-direction: column;
+        align-items: flex-start;
+        border-radius: 22px;
+    }
+
+    .landing-page .about-content h3 {
+        font-size: 1.65rem;
+        line-height: 1.25;
+    }
+
+    .landing-page .about-content p {
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    .landing-page .card-graphic {
+        width: 100%;
+        min-width: 0;
+        height: 150px;
+        font-size: 4rem;
+    }
+
+    .landing-page .footer-top {
+        gap: 32px;
+        padding: 48px 20px;
+        text-align: left;
+    }
+
+    .landing-page .footer-bottom {
+        padding: 20px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+}

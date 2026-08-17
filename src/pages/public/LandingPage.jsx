@@ -9,7 +9,7 @@ import AboutPlatform from "../../components/common/AboutPlatform";
 
 const LandingPage = () => {
     return (
-        <>
+        <div className="landing-page">
             <Navbar />
             <HeroSection />
             <StateCrimeDistribution />
@@ -18,7 +18,7 @@ const LandingPage = () => {
             <FeaturesShowcase />
             <AboutPlatform />
             <Footer />
-        </>
+        </div>
     );
 };
 
