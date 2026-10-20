@@ -14,7 +14,7 @@ const DatasetDetails = () => {
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
-  const [columnFilter, setColumnFilter] = useState({ column: "", value: "" });
+  const [columnFilters, setColumnFilters] = useState({});
   const [activeDropdownColumn, setActiveDropdownColumn] = useState("");
   const [columnOptions, setColumnOptions] = useState({});
   const [loadingColumnOptions, setLoadingColumnOptions] = useState("");
@@ -26,7 +26,7 @@ const DatasetDetails = () => {
     const nextValue = String(nextQuery || "");
     setSearchInput(nextValue);
     setQuery(nextValue);
-    setColumnFilter({ column: "", value: "" });
+    setColumnFilters({});
     setPage(1);
   }, []);
 
@@ -61,16 +61,40 @@ const DatasetDetails = () => {
 
   const applyColumnFilter = useCallback((column, value) => {
     const columnName = String(column || "");
-    const nextValue = value === null || value === undefined ? "" : String(value);
-    setColumnFilter({ column: columnName, value: nextValue });
-    setSearchInput(nextValue);
+
+    if (!columnName) {
+      return;
+    }
+
+    const hasValue = value !== null && value !== undefined && String(value).trim() !== "";
+
+    setColumnFilters((current) => {
+      const nextFilters = { ...current };
+
+      if (hasValue) {
+        nextFilters[columnName] = typeof value === "string" ? value.trim() : value;
+      } else {
+        delete nextFilters[columnName];
+      }
+
+      return nextFilters;
+    });
+    setSearchInput("");
     setQuery("");
     setPage(1);
     setActiveDropdownColumn("");
   }, []);
 
-  const clearColumnFilter = useCallback(() => {
-    setColumnFilter({ column: "", value: "" });
+  const clearColumnFilter = useCallback((columnName = "") => {
+    setColumnFilters((current) => {
+      if (!columnName) {
+        return {};
+      }
+
+      const nextFilters = { ...current };
+      delete nextFilters[columnName];
+      return nextFilters;
+    });
     setSearchInput("");
     setQuery("");
     setPage(1);
@@ -83,19 +107,25 @@ const DatasetDetails = () => {
 
     try {
       const normalizedQuery = String(query || "").trim();
-      const normalizedColumnValue = String(columnFilter.value || "").trim();
+      const filters = Object.entries(columnFilters).reduce((result, [column, value]) => {
+        const normalizedValue = value === null || value === undefined
+          ? ""
+          : String(value).trim();
+
+        if (normalizedValue) {
+          result[column] = typeof value === "string" ? normalizedValue : value;
+        }
+
+        return result;
+      }, {});
       const currentPage = Number(page || 1);
+      const hasFilters = Object.keys(filters).length > 0;
       let response;
 
-      if (normalizedColumnValue) {
+      if (hasFilters || normalizedQuery) {
         response = await datasetService.searchRows(tableName, {
-          filters: { [columnFilter.column]: normalizedColumnValue },
-          page: currentPage,
-          limit: 10,
-        });
-      } else if (normalizedQuery) {
-        response = await datasetService.searchRows(tableName, {
-          searchTerm: normalizedQuery,
+          filters,
+          ...(normalizedQuery ? { searchTerm: normalizedQuery } : {}),
           page: currentPage,
           limit: 10,
         });
@@ -108,25 +138,29 @@ const DatasetDetails = () => {
       setTotalRecords(Number(response.totalRecords || nextRows.length));
       setTotalPages(Number(response.totalPages || 1));
 
+      const filterSummary = Object.entries(filters)
+        .map(([column, value]) => `${column.replaceAll("_", " ")} = ${value}`)
+        .join(", ");
+
       recordActivity({
         type: "dataset-view",
         title: `${tableName.replaceAll("_", " ")}`,
-        subtitle: normalizedColumnValue
-          ? `${columnFilter.column.replaceAll("_", " ")} = ${normalizedColumnValue}`
+        subtitle: filterSummary
+          ? filterSummary
           : normalizedQuery
             ? `Search: ${normalizedQuery}`
             : `Page ${currentPage}`,
         table: tableName,
         page: currentPage,
         query: normalizedQuery,
-        columnFilter,
+        columnFilters: filters,
       });
     } catch (requestError) {
       setError(requestError.message || "Failed to load dataset rows.");
     } finally {
       setIsLoading(false);
     }
-  }, [columnFilter, page, query, tableName]);
+  }, [columnFilters, page, query, tableName]);
 
   useEffect(() => {
     datasetService
@@ -147,17 +181,24 @@ const DatasetDetails = () => {
           <p className="eyebrow">Dataset</p>
           <h2>{tableName.replaceAll("_", " ")}</h2>
           {query && <p className="active-filter">Filtering by: {query}</p>}
-          {columnFilter.value && (
-            <p className="active-filter">
-              {columnFilter.column.replaceAll("_", " ")} = {columnFilter.value}
-              <button type="button" className="filter-clear-button" onClick={clearColumnFilter} aria-label="Clear column filter">
+          {Object.entries(columnFilters).map(([column, value]) => (
+            <p className="active-filter" key={column}>
+              {column.replaceAll("_", " ")} = {String(value)}
+              <button type="button" className="filter-clear-button" onClick={() => clearColumnFilter(column)} aria-label={`Clear ${column} filter`}>
                 <FiX />
               </button>
             </p>
+          ))}
+          {Object.keys(columnFilters).length > 1 && (
+            <button type="button" className="filter-clear-button" onClick={() => clearColumnFilter()} aria-label="Clear all filters">
+              Clear all filters
+            </button>
           )}
-          {query && <p className="active-filter">{totalRecords} matching row{totalRecords === 1 ? "" : "s"} found</p>}
+          {(query || Object.keys(columnFilters).length > 0) && (
+            <p className="active-filter">{totalRecords} matching row{totalRecords === 1 ? "" : "s"} found</p>
+          )}
         </div>
-        <form className="search-box" onSubmit={(event) => { event.preventDefault(); setPage(1); setQuery(searchInput.trim()); setColumnFilter({ column: "", value: "" }); }}>
+        <form className="search-box" onSubmit={(event) => { event.preventDefault(); setPage(1); setQuery(searchInput.trim()); }}>
           <FiSearch />
           <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Search records" />
         </form>
