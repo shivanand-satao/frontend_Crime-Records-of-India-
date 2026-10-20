@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiSearch, FiX } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 import DatasetTable from "../../components/user/DatasetTable";
@@ -22,18 +22,6 @@ const DatasetDetails = () => {
   const [error, setError] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const globalFilterCache = useRef({ tableName: "", query: "", rows: [] });
-  const columnFilterRef = useRef({ column: "", value: "" });
-  const queryRef = useRef("");
-
-  useEffect(() => {
-    columnFilterRef.current = columnFilter;
-  }, [columnFilter]);
-
-  useEffect(() => {
-    queryRef.current = query;
-  }, [query]);
-
   const applyQuery = useCallback((nextQuery) => {
     const nextValue = String(nextQuery || "");
     setSearchInput(nextValue);
@@ -73,158 +61,72 @@ const DatasetDetails = () => {
 
   const applyColumnFilter = useCallback((column, value) => {
     const columnName = String(column || "");
-    const nextValue = String(value || "");
-    columnFilterRef.current = { column: columnName, value: nextValue };
+    const nextValue = value === null || value === undefined ? "" : String(value);
     setColumnFilter({ column: columnName, value: nextValue });
     setSearchInput(nextValue);
     setQuery("");
     setPage(1);
     setActiveDropdownColumn("");
-    loadRows({ columnFilterOverride: { column: columnName, value: nextValue }, queryOverride: "", pageOverride: 1 });
   }, []);
 
   const clearColumnFilter = useCallback(() => {
-    columnFilterRef.current = { column: "", value: "" };
     setColumnFilter({ column: "", value: "" });
     setSearchInput("");
     setQuery("");
     setPage(1);
     setActiveDropdownColumn("");
-    loadRows({ columnFilterOverride: { column: "", value: "" }, queryOverride: "", pageOverride: 1 });
   }, []);
 
-  const rowMatchesQuery = useCallback((row, searchTerm) => {
-    const normalizedTerm = String(searchTerm || "").trim().toLowerCase();
-
-    if (!normalizedTerm) {
-      return true;
-    }
-
-    return Object.values(row || {}).some((value) => String(value ?? "").toLowerCase().includes(normalizedTerm));
-  }, []);
-
-  const rowMatchesColumnFilter = useCallback((row, filter) => {
-    const columnName = String(filter?.column || "").trim();
-    const filterValue = String(filter?.value || "").trim().toLowerCase();
-
-    if (!columnName || !filterValue) {
-      return true;
-    }
-
-    const rowValue = row?.[columnName] ?? row?.[columnName.replace(/\s+/g, "_")];
-    if (rowValue != null && String(rowValue).toLowerCase() === filterValue) {
-      return true;
-    }
-
-    return Object.entries(row || {}).some(([key, value]) => {
-      const normalizedKey = String(key || "").toLowerCase().replace(/[\s_-]+/g, "");
-      const normalizedColumn = columnName.toLowerCase().replace(/[\s_-]+/g, "");
-
-      return normalizedKey === normalizedColumn && String(value ?? "").toLowerCase().includes(filterValue);
-    });
-  }, []);
-
-  const loadRows = useCallback(async (overrides = {}) => {
+  const loadRows = useCallback(async () => {
     setIsLoading(true);
     setError("");
 
     try {
-      const currentColumnFilter = overrides.columnFilterOverride || columnFilterRef.current;
-      const normalizedQuery = String(overrides.queryOverride ?? queryRef.current ?? "").trim();
-      const currentPage = Number(overrides.pageOverride ?? page ?? 1);
-      const normalizedColumnValue = String(currentColumnFilter.value || "").trim();
+      const normalizedQuery = String(query || "").trim();
+      const normalizedColumnValue = String(columnFilter.value || "").trim();
+      const currentPage = Number(page || 1);
+      let response;
 
       if (normalizedColumnValue) {
-        const cache = globalFilterCache.current;
-        const cacheKey = `${tableName}:${String(currentColumnFilter.column).toLowerCase()}:${normalizedColumnValue.toLowerCase()}`;
-        const cacheHit = cache.tableName === cacheKey;
-
-        if (!cacheHit) {
-          const firstResponse = await datasetService.getRows(tableName, { page: 1, limit: 100 });
-          const totalPagesFromServer = Number(firstResponse.totalPages || 1);
-          const firstPageRows = normalizeRowList(firstResponse);
-          const additionalResponses = totalPagesFromServer > 1
-            ? await Promise.all(
-                Array.from({ length: totalPagesFromServer - 1 }, (_, index) =>
-                  datasetService.getRows(tableName, { page: index + 2, limit: 100 })
-                )
-              )
-            : [];
-
-          const allRows = [
-            ...firstPageRows,
-            ...additionalResponses.flatMap((response) => normalizeRowList(response)),
-          ];
-
-          cache.tableName = cacheKey;
-          cache.query = normalizedColumnValue.toLowerCase();
-          cache.rows = allRows.filter((row) => rowMatchesColumnFilter(row, currentColumnFilter));
-        }
-
-        const matchingRows = globalFilterCache.current.rows;
-        const startIndex = (currentPage - 1) * 10;
-        setTotalRecords(matchingRows.length);
-        setTotalPages(Math.max(1, Math.ceil(matchingRows.length / 10)));
-        setRows(matchingRows.slice(startIndex, startIndex + 10));
+        response = await datasetService.searchRows(tableName, {
+          filters: { [columnFilter.column]: normalizedColumnValue },
+          page: currentPage,
+          limit: 10,
+        });
       } else if (normalizedQuery) {
-        const cache = globalFilterCache.current;
-        const cacheHit = cache.tableName === tableName && cache.query === normalizedQuery.toLowerCase();
-
-        if (!cacheHit) {
-          const firstResponse = await datasetService.getRows(tableName, { page: 1, limit: 100 });
-          const totalPagesFromServer = Number(firstResponse.totalPages || 1);
-          const firstPageRows = normalizeRowList(firstResponse);
-          const additionalResponses = totalPagesFromServer > 1
-            ? await Promise.all(
-                Array.from({ length: totalPagesFromServer - 1 }, (_, index) =>
-                  datasetService.getRows(tableName, { page: index + 2, limit: 100 })
-                )
-              )
-            : [];
-
-          const allRows = [
-            ...firstPageRows,
-            ...additionalResponses.flatMap((response) => normalizeRowList(response)),
-          ];
-
-          cache.tableName = tableName;
-          cache.query = normalizedQuery.toLowerCase();
-          cache.rows = allRows.filter((row) => rowMatchesQuery(row, normalizedQuery));
-        }
-
-        const matchingRows = globalFilterCache.current.rows;
-        const startIndex = (currentPage - 1) * 10;
-        setTotalRecords(matchingRows.length);
-        setTotalPages(Math.max(1, Math.ceil(matchingRows.length / 10)));
-        setRows(matchingRows.slice(startIndex, startIndex + 10));
+        response = await datasetService.searchRows(tableName, {
+          searchTerm: normalizedQuery,
+          page: currentPage,
+          limit: 10,
+        });
       } else {
-        globalFilterCache.current = { tableName: "", query: "", rows: [] };
-        const response = await datasetService.getRows(tableName, { page: currentPage, limit: 10 });
-        const nextRows = normalizeRowList(response);
-        setRows(nextRows);
-        setTotalRecords(Number(response.totalRecords || nextRows.length));
-        setTotalPages(Number(response.totalPages || 1));
+        response = await datasetService.getRows(tableName, { page: currentPage, limit: 10 });
       }
+
+      const nextRows = normalizeRowList(response);
+      setRows(nextRows);
+      setTotalRecords(Number(response.totalRecords || nextRows.length));
+      setTotalPages(Number(response.totalPages || 1));
 
       recordActivity({
         type: "dataset-view",
         title: `${tableName.replaceAll("_", " ")}`,
-        subtitle: currentColumnFilter.value
-          ? `${currentColumnFilter.column.replaceAll("_", " ")} = ${currentColumnFilter.value}`
+        subtitle: normalizedColumnValue
+          ? `${columnFilter.column.replaceAll("_", " ")} = ${normalizedColumnValue}`
           : normalizedQuery
             ? `Search: ${normalizedQuery}`
             : `Page ${currentPage}`,
         table: tableName,
         page: currentPage,
         query: normalizedQuery,
-        columnFilter: currentColumnFilter,
+        columnFilter,
       });
     } catch (requestError) {
-      setError(requestError.message);
+      setError(requestError.message || "Failed to load dataset rows.");
     } finally {
       setIsLoading(false);
     }
-  }, [page, rowMatchesColumnFilter, rowMatchesQuery, tableName]);
+  }, [columnFilter, page, query, tableName]);
 
   useEffect(() => {
     datasetService
@@ -255,7 +157,7 @@ const DatasetDetails = () => {
           )}
           {query && <p className="active-filter">{totalRecords} matching row{totalRecords === 1 ? "" : "s"} found</p>}
         </div>
-        <form className="search-box" onSubmit={(event) => { event.preventDefault(); setPage(1); setQuery(searchInput.trim()); }}>
+        <form className="search-box" onSubmit={(event) => { event.preventDefault(); setPage(1); setQuery(searchInput.trim()); setColumnFilter({ column: "", value: "" }); }}>
           <FiSearch />
           <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Search records" />
         </form>
