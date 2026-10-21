@@ -58,4 +58,12 @@ describe("Modern crime records landing page", () => {
         expect(screen.getByRole("link", { name: /Activity history Pick up/ })).toHaveAttribute("href", "/dashboard/history");
         expect(screen.getByRole("link", { name: "Research paths" })).toHaveAttribute("href", "#research-paths");
     });
+
+    test("introduces both planned assistant capabilities without claiming live access", () => {
+        renderPage();
+        expect(screen.getByRole("heading", { name: "From plain language to records." })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Legal context, grounded in sources." })).toBeInTheDocument();
+        expect(screen.getByText(/Live answers and personal chat sessions are not available yet/)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "AI assistant", exact: true })).toHaveAttribute("href", "#research-assistant");
+    });
 });

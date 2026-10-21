@@ -23,11 +23,13 @@ import LandingPage from "../pages/public/LandingPage";
 import LoginPage from "../pages/public/LoginPage";
 import NotFound from "../pages/public/NotFound";
 import RegisterPage from "../pages/public/RegisterPage";
+import ResearchAssistant from "../components/common/ResearchAssistant";
 
 const AppRoutes = () => {
     return (
         <AuthProvider>
             <BrowserRouter>
+                <ResearchAssistant>
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginPage />} />
@@ -69,6 +71,7 @@ const AppRoutes = () => {
                     </Route>
                     <Route path="*" element={<NotFound />} />
                 </Routes>
+                </ResearchAssistant>
             </BrowserRouter>
         </AuthProvider>
     );

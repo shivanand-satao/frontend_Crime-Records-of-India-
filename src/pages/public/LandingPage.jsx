@@ -5,6 +5,7 @@ import Navbar from "../../components/common/Navbar";
 import Footer from "../../components/common/Footer";
 import FeaturedDatasets from "../../components/common/FeaturedDatasets";
 import ResearchPaths from "../../components/common/ResearchPaths";
+import AssistantOverview from "../../components/common/AssistantOverview";
 
 const views = [
     { name: "Explore datasets", icon: FiDatabase, title: "A clearer view of crime data.", description: "Browse structured records by topic, inspect their columns, and find the dataset your research needs.", rows: ["Auto theft", "Serious fraud", "Property stolen and recovered"], tag: "Dataset explorer" },
@@ -12,6 +13,7 @@ const views = [
     { name: "Keep a trail", icon: FiShield, title: "Research with a little more clarity.", description: "Return to your browsing history, manage your profile, and keep research activity organized.", rows: ["Recently viewed datasets", "Search history", "Your research profile"], tag: "Research workspace" },
 ];
 const questions = [
+    ["Can I ask the AI assistant questions yet?", "The floating assistant is a UI preview. We’re building natural-language crime-data queries and RAG over six Indian legal reference PDFs. Live answers, source retrieval, and personal chat sessions will be enabled after the FastAPI service is connected. Legal research is not legal advice."],
     ["What can I explore here?", "The platform brings crime-related datasets into a structured workspace, with dataset browsing, record inspection, analytics, and activity history."],
     ["Do I need an account?", "You can explore this overview without signing in. Create an account or sign in to access the dataset and analytics workspaces."],
     ["Are the preview charts live crime statistics?", "No. The homepage preview is illustrative. Open a dataset in the workspace and check its source, coverage, and fields before drawing conclusions."],
@@ -35,7 +37,7 @@ const LandingPage = () => {
                 <section className="modern-hero">
                     <p className="pill-label"><span /> BUILT FOR CURIOUS MINDS. GROUNDED IN DATA.</p>
                     <h1>Understand the records.<br />See the <span>bigger picture.</span></h1>
-                    <p className="hero-description">Make sense of India’s crime data in one focused workspace.<br className="desktop-break" /> Explore datasets, uncover context, and turn information into insight.</p>
+                    <p className="hero-description">Make sense of India’s crime data in one focused workspace.<br className="desktop-break" /> Explore records today. Preview a new way to ask questions about data and legal documents.</p>
                     <div className="modern-actions"><Link className="modern-button" to="/dashboard/datasets">Explore datasets <FiArrowRight /></Link><a className="modern-button button-light" href="#how-it-works">See how it works <span aria-hidden="true">↗</span></a></div>
                     <p className="hero-footnote"><FiCheck /> Structured datasets <span>·</span><FiCheck /> One research workspace</p>
                     <div className="product-stage" id="analytics">
@@ -54,6 +56,7 @@ const LandingPage = () => {
                 <section className="modern-section workflow-section" id="how-it-works"><div className="section-intro"><p className="section-kicker">FROM INFORMATION TO UNDERSTANDING</p><h2>Less friction.<br />More informed exploration.</h2><p>Good research starts with the right record.<br />Keep the path from discovery to detail simple.</p></div><div className="workflow-grid">{steps.map(({ number, icon: Icon, title, text }) => <article className="workflow-card" key={number}><div className="workflow-card-top"><span>{number}</span><Icon /></div><h3>{title}</h3><p>{text}</p></article>)}</div></section>
                 <section className="feature-split modern-section" id="features"><div className="feature-copy"><p className="section-kicker">ONE CONNECTED WORKSPACE</p><h2>Everything in view.<br /><span>Nothing in the way.</span></h2><p>A thoughtful workspace for exploring crime records, without the noise.</p><div className="feature-selector" aria-label="Workspace features">{views.map(({ name, icon: Icon }, index) => <button type="button" key={name} aria-pressed={activeView === index} onClick={() => setActiveView(index)}><Icon /><span>{name}</span><FiArrowRight /></button>)}</div><Link className="text-link" to="/dashboard">Open your workspace <FiArrowRight /></Link></div><div className="feature-demo" aria-live="polite"><div className="feature-demo-label"><span /><span>{view.tag}</span><FiGrid /></div><div className="feature-demo-body"><span className="feature-demo-icon"><FiLayers /></span><h3>{view.title}</h3><p>{view.description}</p><div className="feature-demo-rows">{view.rows.map((row, index) => <div key={row}><span>0{index + 1}</span><strong>{row}</strong><FiArrowRight /></div>)}</div><span className="preview-disclaimer">Interface preview · sign in to explore your data</span></div></div></section>
                 <ResearchPaths />
+                <AssistantOverview />
                 <div className="modern-section collection-section"><div className="section-heading-row"><div><p className="section-kicker">THE COLLECTION</p><h2>Follow your curiosity.</h2><p>Different questions. A more organized place to start.</p></div><Link className="text-link" to="/dashboard/datasets">Browse all datasets <FiArrowRight /></Link></div><FeaturedDatasets /></div>
                 <section className="responsible-section modern-section"><span className="responsible-icon"><FiShield /></span><div><p className="section-kicker">RESEARCH WITH RESPONSIBILITY</p><h2>Behind every record,<br />there’s real-world context.</h2><p>Data can inform better questions, but it doesn’t tell the whole story. Consider reporting differences, time periods, definitions, and source limitations before making comparisons.</p></div></section>
                 <section className="modern-section faq-section"><div><p className="section-kicker">A LITTLE MORE CLARITY</p><h2>Good questions.<br />Straightforward answers.</h2><p>Before you start exploring.</p></div><div className="faq-list">{questions.map(([question, answer], index) => <details key={question}><summary><span>0{index + 1}</span>{question}<span className="faq-toggle" aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
