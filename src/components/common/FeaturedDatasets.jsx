@@ -43,23 +43,19 @@ const datasets = [
 const FeaturedDatasets = () => {
     return (
         <section className="datasets-section" id="datasets">
-            <h2>Featured Datasets</h2>
+            <h2 className="visually-hidden">Featured datasets</h2>
             <div className="dataset-grid">
-                {datasets.map(({ Icon, ...dataset }, index) => (
+                {datasets.map(({ Icon, ...dataset }) => (
                     <div
                         key={dataset.table}
                         className="dataset-card"
-                        data-aos="fade-up"
-                        data-aos-delay={index * 100}
                     >
                         <div className="dataset-icon">
                             <Icon />
                         </div>
                         <h3>{dataset.title}</h3>
                         <p>{dataset.description}</p>
-                        <Link to={`/dashboard/datasets/${dataset.table}`}>
-                            <button>View Dataset</button>
-                        </Link>
+                        <Link to={`/dashboard/datasets/${dataset.table}`} className="dataset-open-link">Explore dataset <span aria-hidden="true">↗</span></Link>
                     </div>
                 ))}
             </div>

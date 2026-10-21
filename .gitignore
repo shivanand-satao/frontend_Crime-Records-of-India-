@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Local credentials and verification artifacts
+.env
+.env.*
+!.env.example
+!.env.sample
+.venv/
+.codex-build*/
+.vercel/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -1,5 +1,8 @@
 import "@testing-library/jest-dom";
 import { jest } from "@jest/globals";
+import { TextDecoder, TextEncoder } from "node:util";
+
+Object.assign(globalThis, { TextDecoder, TextEncoder });
 
 Object.defineProperty(window, "localStorage", {
   value: {

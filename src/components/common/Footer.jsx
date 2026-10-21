@@ -1,85 +1,11 @@
-const Footer = () => {
-    return (
-        <footer className="footer">
+import { FiArrowUpRight, FiShield } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
-            <div className="footer-top">
-
-                <div className="footer-column">
-
-                    <h2>
-                        <span>Crime</span> Records of India
-                    </h2>
-
-                    <p>
-                        Crime Records of India is a centralized
-                        analytics and governance platform
-                        providing structured access to crime
-                        datasets across India.
-                    </p>
-
-                    <h4>Join Us</h4>
-
-                    <p>
-                        Explore crime trends and help build
-                        a safer society through data-driven
-                        insights.
-                    </p>
-
-                </div>
-
-                <div className="footer-column">
-
-                    <h3>Quick Links</h3>
-
-                    <ul>
-                        <li>Home</li>
-                        <li>Datasets</li>
-                        <li>Analytics</li>
-                        <li>Login</li>
-                        <li>Admin Portal</li>
-                    </ul>
-
-                </div>
-
-                <div className="footer-column">
-
-                    <h3>Contact Us</h3>
-
-                    <p>Pune, Maharashtra, India</p>
-                    <p>+91 95793 25554</p>
-                    <p>support@crimeindia.com</p>
-
-                </div>
-
-                <div className="footer-column">
-
-                    <h3>Technology Stack</h3>
-
-                    <p>React</p>
-                    <p>Node.js</p>
-                    <p>MySQL</p>
-                    <p>Redis</p>
-                    <p>Docker</p>
-
-                </div>
-
-            </div>
-
-            <div className="footer-bottom">
-
-                <p>
-                    © 2026 Crime Records of India.
-                    All Rights Reserved.
-                </p>
-
-                <p>
-                    Developed by Shivanand Satao
-                </p>
-
-            </div>
-
-        </footer>
-    );
-};
+const Footer = () => (
+    <footer className="modern-footer">
+        <div className="modern-footer-top"><div className="footer-brand-copy"><Link to="/" className="modern-brand"><span className="brand-symbol"><FiShield /></span><span>Crime Records<small>OF INDIA</small></span></Link><p>A clearer perspective on crime data.<br />Built for exploration. Designed for understanding.</p><span className="footer-purpose">A data platform. Not an emergency service.</span></div><div><h3>Explore</h3><a href="#datasets">Dataset collection</a><a href="#features">The platform</a><a href="#how-it-works">How it works</a></div><div><h3>Your workspace</h3><Link to="/dashboard">Overview <FiArrowUpRight /></Link><Link to="/dashboard/analytics">Analytics</Link><Link to="/dashboard/history">Activity history</Link></div><div><h3>Get started</h3><Link to="/register">Create an account</Link><Link to="/login">Sign in</Link><Link to="/admin">Admin portal</Link></div></div>
+        <div className="modern-footer-bottom"><p>© {new Date().getFullYear()} Crime Records of India</p><p>Developed by Shivanand Satao <span>·</span> Explore responsibly.</p></div>
+    </footer>
+);
 
 export default Footer;
