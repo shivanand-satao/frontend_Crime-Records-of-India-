@@ -79,7 +79,9 @@ export default function ResearchAssistant({ children }) {
             <aside className="research-assistant" aria-label="Research assistant widget">
                 {open && <AssistantPanel key={identity} close={close} authenticated={Boolean(auth?.isAuthenticated)} />}
                 <button className="assistant-launcher" ref={launcherRef} type="button" aria-label={open ? "Hide research assistant" : "Open research assistant"} aria-expanded={open} onClick={() => setOpen(!open)}>
-                    {open ? <FiX aria-hidden="true" /> : <FiMessageSquare aria-hidden="true" />}<span>{open ? "Close" : "Ask a question"}</span><small>PREVIEW</small>
+                    <span className="assistant-launcher-icon">{open ? <FiX aria-hidden="true" /> : <FiMessageSquare aria-hidden="true" />}</span>
+                    <span className="assistant-launcher-copy"><strong>{open ? "Close assistant" : "Ask the AI assistant"}</strong>{!open && <span>Crime data & legal documents</span>}</span>
+                    <small>PREVIEW</small>
                 </button>
             </aside>
         </AssistantContext.Provider>

@@ -7,6 +7,16 @@ import { AuthContext } from "../../context/authContextValue";
 const tree = (auth = { isAuthenticated: false }) => <MemoryRouter><AuthContext.Provider value={auth}><ResearchAssistant><AssistantOverview /></ResearchAssistant></AuthContext.Provider></MemoryRouter>;
 
 describe("Research assistant preview", () => {
+    test("keeps the assistant purpose and preview badge visible before opening", () => {
+        render(tree());
+        const launcher = screen.getByRole("button", { name: "Open research assistant" });
+        expect(launcher).toHaveTextContent("Ask the AI assistant");
+        expect(launcher).toHaveTextContent("Crime data & legal documents");
+        expect(launcher).toHaveTextContent("PREVIEW");
+        expect(launcher).toHaveAttribute("aria-expanded", "false");
+        fireEvent.click(launcher);
+        expect(screen.getByRole("button", { name: "Hide research assistant" })).toHaveTextContent("Close assistant");
+    });
     test("opens from the homepage overview and closes with Escape, returning focus", () => {
         render(tree());
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

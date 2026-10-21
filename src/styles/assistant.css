@@ -11,10 +11,15 @@
 .assistant-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; font-size: 11px; color: #5c526f; }
 .assistant-flow span { padding: 7px 10px; border: 1px solid #e2ddeb; border-radius: 7px; background: #fff; }
 .research-assistant { position: fixed; right: 24px; bottom: 22px; z-index: 1100; font-family: inherit; color: #27233c; }
-.assistant-launcher { margin-left: auto; display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 14px 20px; border: 1px solid #8e72ec; border-radius: 18px; color: #fff; background: #6545d8; box-shadow: 0 8px 28px #3b266f30; cursor: pointer; font: inherit; font-weight: 600; }
-.assistant-launcher > svg { width: 21px; height: 21px; }
-.assistant-launcher small { font-size: 9px; letter-spacing: 1px; color: #e8dfff; border-left: 1px solid #b9a6ef; padding-left: 10px; }
-.assistant-panel { display: flex; flex-direction: column; width: min(420px, calc(100vw - 32px)); height: min(700px, calc(100dvh - 110px)); margin-bottom: 14px; overflow: hidden; background: #fff; border: 1px solid #e5dff0; border-radius: 22px; box-shadow: 0 20px 75px #21143e33; }
+.assistant-launcher { margin-left: auto; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 48px); min-height: 76px; padding: 14px 18px; border: 2px solid #fff; border-radius: 22px; color: #fff; background: linear-gradient(125deg, #5130bb, #7949e8); box-shadow: 0 0 0 5px #8059e324, 0 12px 36px #38205f55; cursor: pointer; font: inherit; font-weight: 600; transition: transform .2s, box-shadow .2s; }
+.assistant-launcher-icon { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; background: #ffffff20; border: 1px solid #ffffff45; border-radius: 14px; }
+.assistant-launcher-icon svg { width: 26px; height: 26px; }
+.assistant-launcher-copy { display: flex; flex-direction: column; gap: 5px; text-align: left; min-width: 0; }
+.assistant-launcher-copy strong { font-size: 16px; line-height: 1.3; font-weight: 750; }
+.assistant-launcher-copy > span { font-size: 11px; line-height: 1.4; color: #efe8ff; font-weight: 400; }
+.assistant-launcher small { align-self: flex-start; font-size: 8px; letter-spacing: .7px; color: #43216f; background: #efe4ff; border-radius: 5px; padding: 4px 6px; }
+.assistant-launcher:hover { transform: translateY(-3px); box-shadow: 0 0 0 6px #8059e330, 0 16px 40px #38205f66; }
+.assistant-panel { display: flex; flex-direction: column; width: min(420px, calc(100vw - 32px)); height: min(700px, calc(100dvh - 140px)); margin-bottom: 14px; overflow: hidden; background: #fff; border: 1px solid #e5dff0; border-radius: 22px; box-shadow: 0 20px 75px #21143e33; }
 .assistant-header { display: flex; align-items: center; gap: 12px; background: #252039; color: #fff; padding: 20px; flex-shrink: 0; }
 .assistant-header h2 { font-size: 17px; margin: 0 0 5px; line-height: 1.3; }
 .assistant-header h2:focus { outline: none; }
@@ -54,9 +59,14 @@
 @media (max-width: 900px) { .assistant-overview { grid-template-columns: 1fr; gap: 30px; } }
 @media (max-width: 520px) {
     .research-assistant { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }
-    .assistant-panel { width: calc(100vw - 24px); height: min(700px, calc(100dvh - 100px - env(safe-area-inset-bottom))); border-radius: 18px; }
-    .assistant-launcher { padding: 12px 16px; min-height: 48px; font-size: 13px; }
+    .assistant-panel { width: calc(100vw - 24px); height: min(700px, calc(100dvh - 120px - env(safe-area-inset-bottom))); border-radius: 18px; }
+    .assistant-launcher { padding: 11px 12px; min-height: 68px; max-width: calc(100vw - 24px); gap: 9px; border-radius: 18px; }
+    .assistant-launcher-icon { width: 36px; height: 36px; border-radius: 11px; }
+    .assistant-launcher-icon svg { width: 23px; height: 23px; }
+    .assistant-launcher-copy strong { font-size: 14px; }
+    .assistant-launcher-copy > span { font-size: 10px; }
     .assistant-header { padding: 15px; }
     .assistant-body { padding: 18px; }
     .assistant-capabilities article { padding: 23px; }
 }
+@media (prefers-reduced-motion: reduce) { .assistant-launcher { transition: none; } .assistant-launcher:hover { transform: none; } }
