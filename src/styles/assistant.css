@@ -43,6 +43,16 @@
 .assistant-prompts svg { flex-shrink: 0; color: #8061cf; }
 .assistant-preview-result { border-left: 3px solid #8160d5; background: #f7f4fd; padding: 14px; margin-top: 18px; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
 .assistant-preview-result p { margin: 8px 0 0; }
+.assistant-document-filter { display: grid; gap: 8px; font-size: 12px; margin-bottom: 18px; }
+.assistant-document-filter select { width: 100%; padding: 10px; border: 1px solid #ddd3ee; border-radius: 8px; background: #fff; color: #27233c; font: inherit; }
+.assistant-source { border-top: 1px solid #ddd3ee; margin-top: 18px; padding-top: 14px; }
+.assistant-source h4 { margin: 0; }
+.assistant-source blockquote { white-space: pre-wrap; margin: 12px 0; padding: 12px; background: white; border-left: 2px solid #8160d5; }
+.assistant-source small { display: block; overflow-wrap: anywhere; }
+.assistant-plan { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
+.assistant-table-scroll { overflow-x: auto; max-height: 360px; margin-top: 12px; }
+.assistant-table-scroll table { border-collapse: collapse; font-size: 12px; }
+.assistant-table-scroll td, .assistant-table-scroll th { padding: 8px; border: 1px solid #ddd3ee; text-align: left; max-width: 250px; overflow-wrap: anywhere; }
 .assistant-account { display: flex; align-items: flex-start; gap: 9px; margin-top: 22px; color: #72697f; }
 .assistant-account svg { flex-shrink: 0; margin-top: 3px; }
 .assistant-account p { margin: 0; font-size: 11px; line-height: 1.7; }

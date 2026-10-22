@@ -1,4 +1,23 @@
-# Research assistant integration handoff
+# Research assistant beta integration
+
+## Implemented beta (supersedes the original handoff below)
+
+The widget now calls the authenticated backend gateway with the existing Axios client
+and token refresh flow. Browser -> backend -> Render chatbot -> restricted PostgreSQL.
+Legal mode returns keyword source candidates, titles, editions and PDF pages, not legal
+answers. Data mode requires an approved dataset: Groq proposes a structured plan; the server
+validates/compiles parameterized SQL and returns read-only results with the plan for review.
+Questions and selected public schema are sent to Groq; database rows are not sent to Groq.
+All source/model text is rendered as text, not HTML. Account changes, logout and panel close
+abort requests and clear drafts/results. History remains disabled and nothing is saved by
+the assistant. Never include personal case details. Free servers can cold-start; retry.
+
+Units, coverage and total/component overlap are unverified. Query validation is not proof
+of statistical meaning. No verified current-law answers, forecasts or cross-dataset joins.
+No service secret, Groq key or database credential belongs in frontend environment values.
+Validate with Jest, changed-file ESLint, production build and authenticated hosted checks.
+
+The original planning handoff below is retained as historical design context only.
 
 ## Current frontend
 
