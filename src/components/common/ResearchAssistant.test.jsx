@@ -123,7 +123,10 @@ describe("Research assistant preview", () => {
         await screen.findByRole("option", { name: "Crime dataset" });
         fireEvent.change(screen.getByLabelText("Your research question"), { target: { value: "show murder" } });
         expect(screen.getByRole("button", { name: "Query dataset" })).toBeDisabled();
+        expect(screen.getByText(/Choose a dataset above to enable Send/)).toBeInTheDocument();
         fireEvent.change(screen.getByLabelText("Crime dataset"), { target: { value: "crime" } });
+        expect(screen.queryByText(/Choose a dataset above to enable Send/)).not.toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Query dataset" })).toBeEnabled();
         fireEvent.click(screen.getByRole("button", { name: "Query dataset" }));
         expect(await screen.findByRole("cell", { name: "2012" })).toBeInTheDocument();
         expect(screen.getByText("Review AI-selected query plan")).toBeInTheDocument();

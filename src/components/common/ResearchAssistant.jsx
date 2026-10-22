@@ -121,7 +121,8 @@ function AssistantPanel({ close, authenticated }) {
             <form className="assistant-composer" onSubmit={submit}>
                 <label htmlFor="assistant-question">Your research question</label>
                 <div><textarea id="assistant-question" ref={inputRef} rows={2} maxLength={1500} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={mode === "legal" ? "Try a legal term, such as right to freedom" : "Show murder records in Maharashtra in 2012"} aria-describedby="assistant-privacy" /><button type="submit" disabled={!draft.trim() || busy || (authenticated && mode === "data" && !table)} aria-label={authenticated ? mode === "data" ? "Query dataset" : "Search sources" : "Preview question"}><FiArrowUp /></button></div>
-                <p id="assistant-privacy">Keyword search, not AI legal advice. Editions may be historical texts or bills, not current law. Don’t enter personal case details.</p>
+                {authenticated && mode === "data" && !table && <p id="assistant-dataset-required" role="status">Choose a dataset above to enable Send. Suggested questions only fill the question box.</p>}
+                <p id="assistant-privacy">{mode === "data" ? "AI-planned query: review the selected dataset and filters. Don’t enter personal information." : "Keyword search, not AI legal advice. Editions may be historical texts or bills, not current law. Don’t enter personal case details."}</p>
             </form>
         </section>
     );
