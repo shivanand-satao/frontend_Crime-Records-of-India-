@@ -79,7 +79,7 @@ describe("Research assistant preview", () => {
         await screen.findByText("Source search connected · Keyword matches");
         fireEvent.change(screen.getByLabelText("Your research question"), { target: { value: "freedom" } });
         fireEvent.click(screen.getByRole("button", { name: "Search sources" }));
-        expect(await screen.findByText("1. Reference book")).toBeInTheDocument();
+        expect(await screen.findByText("[1] Reference book")).toBeInTheDocument();
         expect(screen.getByText("<script>untrusted()</script>")).toBeInTheDocument();
         expect(screen.getByText(/PDF pages 12–13/)).toBeInTheDocument();
         expect(chatService.search.mock.calls[0][0]).toBe("freedom");
