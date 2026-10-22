@@ -62,8 +62,8 @@ describe("Modern crime records landing page", () => {
     test("introduces both planned assistant capabilities without claiming live access", () => {
         renderPage();
         expect(screen.getByRole("heading", { name: "From plain language to records." })).toBeInTheDocument();
-        expect(screen.getByRole("heading", { name: "Inspect the source passages." })).toBeInTheDocument();
-        expect(screen.getByText(/Generated legal answers and saved chats are not enabled/)).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Understand the source passages." })).toBeInTheDocument();
+        expect(screen.getByText(/Saved chats are not enabled/)).toBeInTheDocument();
         expect(screen.getByRole("link", { name: "AI assistant", exact: true })).toHaveAttribute("href", "#research-assistant");
     });
 });

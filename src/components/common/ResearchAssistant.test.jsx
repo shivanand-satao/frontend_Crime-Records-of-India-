@@ -79,10 +79,13 @@ describe("Research assistant preview", () => {
         await screen.findByText("Source search connected · Keyword matches");
         fireEvent.change(screen.getByLabelText("Your research question"), { target: { value: "freedom" } });
         fireEvent.click(screen.getByRole("button", { name: "Search sources" }));
-        expect(await screen.findByText("Reference book")).toBeInTheDocument();
+        expect(await screen.findByText("1. Reference book")).toBeInTheDocument();
         expect(screen.getByText("<script>untrusted()</script>")).toBeInTheDocument();
         expect(screen.getByText(/PDF pages 12–13/)).toBeInTheDocument();
         expect(chatService.search.mock.calls[0][0]).toBe("freedom");
+        expect(chatService.search.mock.calls[0]).toHaveLength(2);
+        expect(chatService.search.mock.calls[0][1]).toBeInstanceOf(AbortSignal);
+        expect(screen.queryByRole("combobox", { name: "Source document" })).not.toBeInTheDocument();
         expect(document.querySelector("script")).not.toBeInTheDocument();
     });
 
@@ -94,7 +97,7 @@ describe("Research assistant preview", () => {
         await screen.findByText("Source search connected · Keyword matches");
         fireEvent.change(screen.getByLabelText("Your research question"), { target: { value: "private" } });
         fireEvent.click(screen.getByRole("button", { name: "Search sources" }));
-        const signal = chatService.search.mock.calls[0][2];
+        const signal = chatService.search.mock.calls[0][1];
         rerender(tree({ isAuthenticated: true, user: { id: 2 } }));
         expect(signal.aborted).toBe(true);
         complete({ data: { hits: [{ source_id: "secret", title: "Other account result" }] } });

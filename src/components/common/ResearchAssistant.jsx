@@ -4,6 +4,7 @@ import { FiArrowUp, FiBookOpen, FiDatabase, FiMessageSquare, FiShield, FiX } fro
 import { AuthContext } from "../../context/authContextValue";
 import { AssistantContext } from "../../context/assistantContextValue";
 import chatService from "../../services/chatService";
+import LegalSourceResults from "./LegalSourceResults";
 import "../../styles/assistant.css";
 
 const modes = {
@@ -29,10 +30,8 @@ function AssistantPanel({ close, authenticated }) {
     const inputRef = useRef(null);
     const requestRef = useRef(null);
     const [connection, setConnection] = useState("idle");
-    const [documents, setDocuments] = useState([]);
     const [datasets, setDatasets] = useState([]);
     const [table, setTable] = useState("");
-    const [documentId, setDocumentId] = useState("");
     const [result, setResult] = useState(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -44,11 +43,10 @@ function AssistantPanel({ close, authenticated }) {
         if (!authenticated) return undefined;
         const controller = new AbortController();
         let active = true;
-        Promise.all([chatService.status(controller.signal), chatService.documents(controller.signal)])
-            .then(([status, list]) => {
+        chatService.status(controller.signal)
+            .then(status => {
                 if (!active) return;
                 setConnection(status.data?.retrieval_enabled ? "ready" : "unavailable");
-                setDocuments(list.data?.documents || []);
             })
             .catch(() => { if (active) setConnection("unavailable"); });
         return () => { active = false; controller.abort(); requestRef.current?.abort(); };
@@ -75,7 +73,7 @@ function AssistantPanel({ close, authenticated }) {
         try {
             const response = mode === "data"
                 ? await chatService.ask(question, table, controller.signal)
-                : await chatService.search(question, documentId, controller.signal);
+                : await chatService.search(question, controller.signal);
             if (!controller.signal.aborted) { setResult(response.data); setDraft(""); setConnection("ready"); }
         } catch (failure) {
             if (!controller.signal.aborted) setError(failure?.status === 429
@@ -108,21 +106,20 @@ function AssistantPanel({ close, authenticated }) {
                 <div className="assistant-modes" role="group" aria-label="Research assistant mode">
                     {Object.entries(modes).map(([key, { label, icon: Icon }]) => <button key={key} type="button" aria-pressed={mode === key} onClick={() => chooseMode(key)}><Icon aria-hidden="true" />{label}</button>)}
                 </div>
-                <div className="assistant-mode-copy"><p>{mode === "legal" ? "Search the uploaded reference PDFs by keywords. Read matching source passages with edition and PDF page references. This beta does not generate legal answers." : "Choose a dataset and ask for records. Groq proposes a restricted query plan; the server validates it and returns database results. Review the plan: AI can misunderstand your question."}</p><small>{mode === "legal" ? "Question → keyword search → candidate source passages" : "Question → validated AI query plan → read-only database results"}</small></div>
+                <div className="assistant-mode-copy"><p>{mode === "legal" ? "Search all uploaded PDFs at once. Get a plain-language explanation of matching excerpts, with editions and page references. AI interpretation is unverified, not current-law advice." : "Choose a dataset and ask for records. Groq proposes a restricted query plan; the server validates it and returns database results. Review the plan: AI can misunderstand your question."}</p><small>{mode === "legal" ? "Question → all-document search → explanation with sources" : "Question → validated AI query plan → read-only database results"}</small></div>
                 {authenticated && mode === "data" && <label className="assistant-document-filter">Crime dataset<select aria-label="Crime dataset" value={table} onChange={event => { requestRef.current?.abort(); setBusy(false); setTable(event.target.value); setResult(null); setError(""); }}><option value="">Select a dataset</option>{datasets.map(dataset => <option key={dataset.table} value={dataset.table}>{dataset.label}</option>)}</select><small>Your question and selected public schema are sent to Groq. Returned records are not sent to Groq. Do not include personal information.</small>{!datasets.length && <small>Dataset service unavailable or waking up. Use Retry connection to try again.</small>}</label>}
-                {authenticated && mode === "legal" && <label className="assistant-document-filter">Source document<select aria-label="Source document" value={documentId} onChange={event => { requestRef.current?.abort(); setBusy(false); setDocumentId(event.target.value); setResult(null); setError(""); }}><option value="">All uploaded editions</option>{documents.map(doc => <option key={doc.id} value={doc.id}>{doc.title} — {doc.version_label}</option>)}</select></label>}
                 <span className="assistant-eyebrow">TRY A QUESTION</span>
                 <div className="assistant-prompts">{current.prompts.map((prompt) => <button key={prompt} type="button" onClick={() => { setDraft(prompt); setSubmitted(""); inputRef.current?.focus(); }}>{prompt}<FiArrowUp aria-hidden="true" /></button>)}</div>
                 {busy && <p role="status">Searching source passages… Free hosting can take time to wake up.</p>}
                 {error && <p role="alert">{error}</p>}
-                {submitted && !busy && <div className="assistant-preview-result" role="status"><strong>Your question</strong><p>{submitted}</p>{!authenticated && <p>No request was sent. Sign in to search source passages. No data or legal answer has been generated.</p>}{result && <><p>{result.notice}</p>{result.mode === "data" ? <><p>{result.message || `${result.returned_rows} rows returned from ${result.table}.`}</p>{result.plan && <details><summary>Review AI-selected query plan</summary><pre className="assistant-plan">{JSON.stringify(result.plan, null, 2)}</pre></details>}{result.rows?.length > 0 ? <div className="assistant-table-scroll"><table><thead><tr>{result.columns.map(column => <th scope="col" key={column}>{column}</th>)}</tr></thead><tbody>{result.rows.map((row, index) => <tr key={index}>{result.columns.map(column => <td key={column}>{row[column] === null ? "NULL" : String(row[column])}</td>)}</tr>)}</tbody></table></div> : result.status !== "unsupported" && <p>No records matched the generated filters. Check exact location spellings and year coverage.</p>}{(result.limit_reached || result.display_truncated) && <p>Results may be incomplete because the query or display limit was reached.</p>}</> : <>{!result.hits?.length && <p>No keyword matches found. Try a shorter legal term or choose another document. This does not prove the documents lack relevant information.</p>}{result.hits?.map(hit => <article className="assistant-source" key={hit.source_id}><h4>{hit.title}</h4><p><strong>{hit.version_label}</strong> · PDF pages {hit.page_start}–{hit.page_end}</p>{hit.section_reference && <p>Indexed reference (unverified): {hit.section_reference}</p>}<blockquote>{hit.passage}</blockquote>{hit.excerpt_truncated && <small>Excerpt shortened for display.</small>}<small>{hit.source_id}</small></article>)}</>}</>}</div>}
+                {submitted && !busy && <div className="assistant-preview-result" role="status"><strong>Your question</strong><p>{submitted}</p>{!authenticated && <p>No request was sent. Sign in to search source passages. No data or legal answer has been generated.</p>}{result && <><p>{result.notice}</p>{result.mode === "data" ? <><p>{result.message || `${result.returned_rows} rows returned from ${result.table}.`}</p>{result.plan && <details><summary>Review AI-selected query plan</summary><pre className="assistant-plan">{JSON.stringify(result.plan, null, 2)}</pre></details>}{result.rows?.length > 0 ? <div className="assistant-table-scroll"><table><thead><tr>{result.columns.map(column => <th scope="col" key={column}>{column}</th>)}</tr></thead><tbody>{result.rows.map((row, index) => <tr key={index}>{result.columns.map(column => <td key={column}>{row[column] === null ? "NULL" : String(row[column])}</td>)}</tr>)}</tbody></table></div> : result.status !== "unsupported" && <p>No records matched the generated filters. Check exact location spellings and year coverage.</p>}{(result.limit_reached || result.display_truncated) && <p>Results may be incomplete because the query or display limit was reached.</p>}</> : <LegalSourceResults result={result} />}</>}</div>}
                 <div className="assistant-account"><FiShield aria-hidden="true" /><p>{authenticated ? "You’re signed in. Searches are sent through your backend. Questions and results are not saved; personal chat history is not enabled." : <><Link to="/login" onClick={close}>Sign in</Link> to search the reference PDFs.</>}</p></div>
             </div>
             <form className="assistant-composer" onSubmit={submit}>
                 <label htmlFor="assistant-question">Your research question</label>
                 <div><textarea id="assistant-question" ref={inputRef} rows={2} maxLength={1500} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={mode === "legal" ? "Try a legal term, such as right to freedom" : "Show murder records in Maharashtra in 2012"} aria-describedby="assistant-privacy" /><button type="submit" disabled={!draft.trim() || busy || (authenticated && mode === "data" && !table)} aria-label={authenticated ? mode === "data" ? "Query dataset" : "Search sources" : "Preview question"}><FiArrowUp /></button></div>
                 {authenticated && mode === "data" && !table && <p id="assistant-dataset-required" role="status">Choose a dataset above to enable Send. Suggested questions only fill the question box.</p>}
-                <p id="assistant-privacy">{mode === "data" ? "AI-planned query: review the selected dataset and filters. Don’t enter personal information." : "Keyword search, not AI legal advice. Editions may be historical texts or bills, not current law. Don’t enter personal case details."}</p>
+                <p id="assistant-privacy">{mode === "data" ? "AI-planned query: review the selected dataset and filters. Don’t enter personal information." : "Your question and matching excerpts are sent to Groq for explanation. Editions may be historical texts or bills, not current law. Do not enter personal case details."}</p>
             </form>
         </section>
     );
